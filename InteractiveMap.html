@@ -1,0 +1,283 @@
+<html>
+   <head>
+      <title> Information Visualisation </title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.9.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
+      <style>
+         body {
+         font-family: sans-serif;
+         }
+      </style>
+   </head>
+   <body>
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>描述:&nbsp;</strong></td>
+               <td style="vertical-align: top;">这是一个可交互的可视化页面，其中包括了一个爱尔兰地图，以及两个直方图。该可视化页面旨在展示爱尔兰小学在爱尔兰各个地区的分布，以及每个地区各个学校的不同性别的学生数量。
+            </tr>
+			<tr>
+			<td style="width: 200px; vertical-align: top;"><strong>支持的功能:&nbsp;</strong></td>
+               <td style="vertical-align: top;">点击左侧柱状图的bar或右上角的Sex图例的值，可以过滤掉其他数据，同时地图和直方图都会有相应的变化
+			   </p>
+			   点击底部的直方图并滑动，可以选择一个区间，该区间具有过滤功能，通过滑动该区间观察其他图表的变化
+			   </td>
+			</tr>
+			<td style="width: 200px; vertical-align: top;"><strong>设计思路:&nbsp;</strong></td>
+               <td style="vertical-align: top;">
+				1.我选择将三个图尽量放在同一个窗口下，因为当用户选择过滤掉某些数据时，这样的设计可以方便用户观察图表的变化。
+				</p>
+				2.相较于其他标记（线，三角形等），我认为用“原点”展示地图上的分布更美观和形象，用圆的大小来展示学生数量的多少也比较直观。
+				</p>
+				3.在进行颜色选择时，为了避免加深人们对性别颜色的刻板印象（女性用粉色，男性用蓝色），我选择使用青色表示男性，紫色表示女性。
+			   </td>
+			</tr>
+         </tbody>
+      </table>
+      <hr />
+      <div id="vis"></div>
+      <hr />
+
+      <script type="text/javascript">
+        var yourVlSpec =  {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "description": "Welcome to my interactive map page",
+  "title": {
+    "text": "Irish Primary School Explorer",
+    "anchor": "middle",
+    "fontSize": 24,
+    "offset": 20
+  },
+  "data": {
+    "url": "https://raw.githubusercontent.com/colmr/vis_class/master/primary_schools.csv"
+  },
+  "hconcat": [
+    {
+      "transform": [
+        {
+          "filter": {
+            "selection": "brush"
+          }
+        },
+        {
+          "filter": {
+            "selection": "click_dot"
+          }
+        }
+      ],
+      "mark": "bar",
+      "encoding": {
+        "x": {
+          "aggregate": "count",
+          "type": "quantitative",
+          "title": "Number of Schools"
+        },
+        "y": {
+          "field": "County",
+          "type": "nominal",
+          "title": null
+        },
+        "color": {
+          "field": "Sex",
+          "scale": {
+            "range": [
+              "#72D5C7",
+              "#9C50F9",
+              "#4A70F5"
+            ]
+          },
+          "type": "nominal"
+        },
+        "order": {
+          "field": "Sex",
+          "type": "nominal",
+          "sort": "descending"
+        },
+        "fillOpacity": {
+          "condition": {
+            "selection": "click_bar",
+            "value": 1
+          },
+          "value": 0.3
+        }
+      },
+      "selection": {
+        "click_bar": {
+          "encodings": [
+            "y"
+          ],
+          "type": "multi"
+        }
+      },
+      "height": 600,
+      "width": 100
+    },
+    {
+      "vconcat": [
+        {
+          "layer": [
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/colmr/vis_class/master/Ireland_custom_topjson.json",
+                "format": {
+                  "type": "topojson",
+                  "feature": "IRL_adm1"
+                }
+              },
+              "mark": {
+                "type": "geoshape",
+                "fill": "#ddd",
+                "stroke": "#fff",
+                "strokeWidth": 1
+              },
+              "width": 400,
+              "height": 470
+            },
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/colmr/vis_class/master/primary_schools.csv",
+                "format": {
+                  "type": "csv"
+                }
+              },
+              "transform": [
+                {
+                  "filter": {
+                    "selection": "brush"
+                  }
+                },
+                {
+                  "filter": {
+                    "selection": "click_bar"
+                  }
+                }
+              ],
+              "mark": {
+                "type": "circle"
+              },
+              "encoding": {
+                "latitude": {
+                  "field": "Lat",
+                  "type": "quantitative"
+                },
+                "longitude": {
+                  "field": "Long",
+                  "type": "quantitative"
+                },
+                "size": {
+                  "field": "Total",
+                  "type": "quantitative",
+                  "scale": {
+                    "type": "threshold",
+                    "domain": [
+                      251,
+                      501,
+                      750
+                    ],
+                    "range": [
+                      10,
+                      60,
+                      110,
+                      160
+                    ]
+                  }
+                },
+                "order": {
+                  "field": "Total",
+                  "type": "quantitative",
+                  "sort": "descending"
+                },
+                "color": {
+                  "condition": {
+                    "field": "Sex",
+                    "scale": {
+                      "domain": [
+                        "Boys",
+                        "Girls",
+                        "Mixed"
+                      ],
+                      "range": [
+                        "#72D5C7",
+                        "#9C50F9",
+                        "#4A70F5"
+                      ]
+                    },
+                    "type": "nominal",
+                    "selection": "click_dot"
+                  },
+                  "value": "lightgrey"
+                },
+                "opacity": {
+                  "condition": {
+                    "selection": "click_dot",
+                    "value": 0.8
+                  },
+                  "value": 0
+                }
+              },
+              "selection": {
+                "click_dot": {
+                  "type": "multi",
+                  "fields": [
+                    "Sex"
+                  ],
+                  "bind": "legend"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "selection": {
+            "brush": {
+              "type": "interval"
+            }
+          },
+          "mark": "bar",
+          "transform": [
+            {
+              "filter": {
+                "selection": "click_dot"
+              }
+            },
+            {
+              "filter": {
+                "selection": "click_bar"
+              }
+            }
+          ],
+          "encoding": {
+            "x": {
+              "title": "Number of Students",
+              "field": "Total",
+              "bin": {
+                "step": 20,
+                "extent": [
+                  0,
+                  1000
+                ]
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "title": "Schools",
+              "aggregate": "count",
+              "type": "quantitative"
+            },
+            "color": {
+              "value": "black"
+            }
+          },
+          "width": 400,
+          "height": 100
+        }
+      ]
+    }
+  ],
+  "config": {}
+}
+            vegaEmbed("#vis", yourVlSpec);
+      </script>
+   </body>
+</html>

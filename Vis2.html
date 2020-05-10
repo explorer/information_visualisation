@@ -1,0 +1,158 @@
+<html>
+   <head>
+      <title> Yaowen Wu - Assignment</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.9.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
+      <style>
+         body {
+         font-family: sans-serif;
+         }
+      </style>
+   </head>
+   <body>
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Name:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Yaowen Wu</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Student Number:</strong></td>
+               <td style="vertical-align: top;">18211434</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Dataset description:</strong></td>
+               <td style="vertical-align: top;">
+					<p><a href="http://genomics.senescence.info/download.html#anage" target="_blank" rel="noopener">Animal Age Dataset</a>.</p>
+					<p>AnAge is a database of longevity, ageing, and life history in extant species employing the same engine of GenAge(the benchmark database of genes related to ageing).</p>
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Initial questions</strong></td>
+               <td style="vertical-align: top;">Based on the anage dataset, is there a relationship between the length of time mammals reach maturity and the maximum lifespan? Does gender difference affect this relationship?</td>
+            </tr>
+         </tbody>
+      </table>
+      <hr />
+      <div id="vis"></div>
+      <hr />
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Description:&nbsp;</strong></td>
+               <td style="vertical-align: top;">
+			   These two scatterplots show the relationship between the average length of time mammals reach maturity(maturity days) and the average maximum longevity of different species in the Mammalia.
+			   The left one shows the relationship between female avg. maturity days and the avg. maximum longevity. The right one shows the relationship between male avg. maturity days and the avg. maximum longevity.
+			   Each point represents a species, darker points indicate there are multiple species. Hovering over a point will reveal the associated species' name, female and male average maturity days, and average maximum longevity.
+			   Species discussed in the text are indicated using red color.
+			   </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Insight:</strong></td>
+               <td style="vertical-align: top;">
+			   According to the scatterplots above, we can see that there is a relationship between the length of time mammals reach maturity and the maximum lifespan.
+			   In general, The longer it takes to reach maturity, the longer mammals live, and both genders show similar patterns of relationship.
+			   But this correlation is not perfect, there are several species whose average maturity days are longer than others but the average maximum longevity is shorter(i.e. crassidens(highlighted with red color)).   
+			   
+			   <p>Another interesting thing that I found is that generally female mammals spend less time to reach maturity than male mammals.
+			   And for some species, female mammals may spend far less time to reach maturity than male mammals such as crassidens(highlighted with red color). If you hover to several points, you will notice that.</p>
+			More interestingly, <a href="https://www.who.int/gho/women_and_health/mortality/situation_trends_life_expectancy/en/">WHO</a> has come to a similar conclusion, but only for humans(sapiens species).
+			</tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Design considerations:&nbsp;</strong></td>
+               <td style="vertical-align: top;">
+			   I choose to use a scatterplot because it is a very effective way to show the relationship between two quantitative variables, 
+			   other alternative visualisations of distributions like box plots and histograms can't display a relationship between two quantitative variables very apparently.
+			   Box plots are usually used to just show distributions of numeric data values, especially when you want to compare them between multiple groups. 
+			   Similarly, histograms are good for showing general distributional features of dataset variables.  
+			   
+			   <p>I have also used tooltips so it is possible to hover over a point to see the associated information.
+			   A limitation of this plot is that it suffers from overplotting - many points are drawn on top of each other. To reduce the impact of this I have used opacity - darker circles indicate more species located at the same or very similar position. 
+			   There are some limitations of this - notably it is impossible to tell exactly how many species are at one particular value, and there are a bunch of points clustered around 0, but the emphasised trend is still very apparent.
+			   </p>
+			   <p> 
+			   Binning some data would reduce overplotting and avoid lots of points clustered around 0 such as deleting the top right point,
+			   but considering that this point is very much in line with the overall trend, I didn't end up doing that.</p>
+			   </td>
+            </tr>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Data filtering and transformation:&nbsp;</strong></td>
+               <td style="vertical-align: top;">
+					Only species with recorded maximum longevity(yrs) greater than zero are shown, only species that belong to the Mammalia are shown,
+					only species that male or female maturity (days) are greater than zero are shown.					
+					<p>Aggregate the data using "average" operation to show the average maximum longevity and average maturity days.</p>
+				</td>
+            </tr>
+         </tbody>
+      </table>
+      <script type="text/javascript">
+        var yourVlSpec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/explorer/information_visualisation/master/anage_data.csv",
+    "format": {"type": "csv"}
+  },
+  "title": {"text": "The Species in Mammalia - Avg. Maturity(days) vs Avg. Maximun Longevity", "anchor": "middle", "fontSize": 24,"offset":20},
+  "transform": [
+    {"filter": "datum['Maximum longevity (yrs)'] > 0"},
+    {"filter": "datum['Female maturity (days)'] > 0"},
+    {"filter": "datum['Male maturity (days)'] > 0"},
+    {"filter": "datum.Class == 'Mammalia'"}
+  ],
+  "repeat": {"column": ["Female maturity (days)", "Male maturity (days)"]},
+  "spec": {
+    "mark": {
+      "type": "point",
+      "filled": false
+    },
+    "width": 400,
+    "height": 400,
+    "encoding": {
+      "y": {
+        "field": "Maximum longevity (yrs)", 
+        "type": "quantitative",
+        "scale": {"zero": false},
+        "axis": {
+          "grid": true,
+          "title": "Average of Maximum longevity (yrs)"
+        },
+        "aggregate": "average"
+      },
+      "x": {
+        "field": {"repeat": "column"},
+        "type": "quantitative",
+        "axis": {"grid": true},
+        "aggregate": "average"
+      },
+      "tooltip": [
+        {"field": "Species", "type": "nominal"},
+        {"field": "Female maturity (days)", "type": "quantitative", "aggregate": "average"},
+        {"field": "Male maturity (days)", "type": "quantitative", "aggregate": "average"},
+        {"field": "Maximum longevity (yrs)", "type": "quantitative", "aggregate": "average"}
+      ],
+      "color": {
+        "value": "DarkSlateBlue",
+        "condition": {
+          "test": "datum.Species == 'crassidens'",
+          "value": "red"
+        }
+      },
+      "opacity": {
+        "value": 0.3
+      }
+    }
+  },
+  "config": {
+    "axis": {
+      "titleFontSize":20,
+      "titlePadding":10,
+      "labelFontSize":20
+    }
+  }
+}
+
+            vegaEmbed("#vis", yourVlSpec);
+      </script>
+   </body>
+</html>

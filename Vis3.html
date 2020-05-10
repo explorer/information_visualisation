@@ -1,0 +1,125 @@
+<html>
+   <head>
+      <title> Yaowen Wu - Assignment</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.9.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
+      <style>
+         body {
+         font-family: sans-serif;
+         }
+      </style>
+   </head>
+   <body>
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Name:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Yaowen Wu</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Student Number:</strong></td>
+               <td style="vertical-align: top;">18211434</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Dataset description:</strong></td>
+               <td style="vertical-align: top;">
+					<p><a href="http://genomics.senescence.info/download.html#anage" target="_blank" rel="noopener">Animal Age Dataset</a>.</p>
+					<p>AnAge is a database of longevity, ageing, and life history in extant species employing the same engine of GenAge(the benchmark database of genes related to ageing).</p>
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Initial questions</strong></td>
+               <td style="vertical-align: top;">Where does the data come from? Is the quality of the data good enough? Can the data be trusted?</td>
+            </tr>
+         </tbody>
+      </table>
+      <hr />
+      <div id="vis"></div>
+      <hr />
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Description:&nbsp;</strong></td>
+               <td style="vertical-align: top;">
+			   This bar chart shows where the data come from, how many and how good the data collected is from each specimen origin.
+				The bar chart is sorted from maximum to minimum. 
+			   Each bar represents a specimen origin and these are coloured according to the data quality - blue means the quality of corresponding data is acceptable, 
+			   orange means the quality of corresponding data is high and so on. You can see the detailed information from the legend.
+			   Hovering over a coloured bar will reveal the associated specimen origin, data quality and the number of records.
+			   </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Insight:</strong></td>
+               <td style="vertical-align: top;">
+			   Based on the bar chart above, we can see that the data basically have three origins, captivity, wild and unknown. 
+			   It is clear that most of the data comes from captive or wild individuals. 
+			   And the amount of captive data is slightly higher than the wild one.
+			   It is also very obvious that the quality of most of the data is acceptable, which means the data is worth to be analysed and interpreted.
+			   Particularly, some of the data in captivity is of high quality, and low-quality data accounts for the majority for the unknown origin. 
+			   
+			   <p>Overall, based on the analysis of the bar chart above, I believe that the data quality of this dataset is good enough to do some analyses and researches.</p>
+			</tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Design considerations:&nbsp;</strong></td>
+               <td style="vertical-align: top;">
+			   I choose to use a bar chart to display the relevant data not only because it is a very effective way to convey quantitative information 
+			   but also it can show the difference between different category data visually. 
+			   I give up using the pie chart because it can not show the slight difference between different categories (like wild and captivity) effectively, 
+			   although pie chart is a very good way to show the percentage of a particular category in the population visually.
+			   
+			   <p>Comparing with using more bars, I choose to use different colours to separate different data qualities in individual bars, because it can show the relevant information more clearly and aesthetically.
+			   There is no need to use more bars to separate the data qualities because it is not necessary to show the number of records of different data qualities in different categories.
+			   Using colours can show a general proportion in different bars, which is enough for the current situation.</p>
+			   
+			   I have also used tooltips so it is possible to hover over a coloured bar to see the associated information. 
+			   I also set the specimen origin to the Y-axis and the number of records to the X-axis so that the text on the Y-axis is horizontal.
+			   </td>
+            </tr>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Data filtering and transformation:&nbsp;</strong></td>
+               <td style="vertical-align: top;">					
+					Aggregate the data using "count" operation to calculate the number of records.
+				</td>
+            </tr>
+         </tbody>
+      </table>
+      <script type="text/javascript">
+        var yourVlSpec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/explorer/information_visualisation/master/anage_data.csv",
+    "format": {"type": "csv"}
+  },
+  "title": {"text": "Specimen Origin and Data Quality", "anchor": "middle", "fontSize": 24,"offset":20},
+  "mark": "bar",
+  "width": 400,
+  "height": 250,
+  "encoding": {
+    "y": {
+      "field": "Specimen origin",
+      "type": "nominal",
+      "axis": {"title": "Specimen origin"},
+      "sort": "-x"
+    },
+    "x": {
+      "aggregate": "count",
+      "type": "quantitative"
+    },
+    "color": {
+      "field": "Data quality",
+      "type": "nominal",
+      "legend": {"title": "Data quality"}
+    },
+    "tooltip": [
+      {"field": "Data quality", "type": "nominal"},
+      {"field": "Specimen origin", "type": "nominal"},
+      {"aggregate": "count", "type": "quantitative"}
+    ]
+  }
+}
+
+            vegaEmbed("#vis", yourVlSpec);
+      </script>
+   </body>
+</html>

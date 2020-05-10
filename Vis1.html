@@ -1,0 +1,121 @@
+<html>
+   <head>
+      <title> Yaowen Wu - Assignment</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.9.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@4.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.2.1"></script>
+      <style>
+         body {
+         font-family: sans-serif;
+         }
+      </style>
+   </head>
+   <body>
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Name:&nbsp;</strong></td>
+               <td style="vertical-align: top;">Yaowen Wu</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Student Number:</strong></td>
+               <td style="vertical-align: top;">18211434</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Dataset description:</strong></td>
+               <td style="vertical-align: top;">
+					<p><a href="http://genomics.senescence.info/download.html#anage" target="_blank" rel="noopener">Animal Age Dataset</a>.</p>
+					<p>AnAge is a database of longevity, ageing, and life history in extant species employing the same engine of GenAge(the benchmark database of genes related to ageing).</p>
+               </td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Initial questions</strong></td>
+               <td style="vertical-align: top;">Based on the anage dataset, does human has the maximum longevity in the Mammalia? If not, which species has and how long its longevity is?</td>
+            </tr>
+         </tbody>
+      </table>
+      <hr />
+      <div id="vis"></div>
+      <hr />
+      <table style="width: 850px;" cellspacing="5" cellpadding="5">
+         <tbody>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Description:&nbsp;</strong></td>
+               <td style="vertical-align: top;">This strip plot shows the maximum longevity of different species in different orders of the Mammalia. Each strip represents a species, darker stripes indicate multiple species at that maximum longevity. Hovering over a point will reveal the associated species' name and its maximum longevity.</td>
+            </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Insight:</strong></td>
+               <td style="vertical-align: top;">According to the plot above, it is clear that mysticetus has the maximum longevity(211 years) and its longevity is far longer than any other mammals. 
+			   And sapiens has the second longest life span(122.5 years). Surprisingly, sapiens is not the species that has the longest life span in mammals even human intelligence is higher and living conditions are better. 
+			   But we can notice that sapiens has the maximum longevity in Primates Order and it is also far longer than the other mammals in the same Order, which may indicate that high intelligence and good living conditions can help to prolong life. 
+			   <p>It is hard to believe that there is a kind of mammal that can live more than 200 years and humans can live more than 120 years. But it seems not an error in the dataset, <a href="https://en.wikipedia.org/wiki/Bowhead_whale">mysticetus</a>, also called bowhead whale, is the only baleen whale endemic to the Arctic and sub-arctic waters and may be the longest-lived mammal, with the ability to reach an age of more than 200 years. 
+			   Moreover, up to now, this oldest person ever is <a href="https://en.wikipedia.org/wiki/Jeanne_Calment">Jeanne Calment (1875–1997)</a> from France, who lived to the age of 122 years, 164 days. And according to the <a href="https://en.wikipedia.org/wiki/List_of_the_verified_oldest_people">Wikipedia</a>, there are still some people over the age of 110 still alive.</p>  </tr>
+            <tr>
+               <td style="vertical-align: top;"><strong>Design considerations:&nbsp;</strong></td>
+               <td style="vertical-align: top;">I used strip plot because it can show the maximum longevity of different species very clearly, concisely and aesthetically. 
+			   I try to use bar chart as an alternative but the coordinate axis would be very long and the final chart would be very large, and that would be very hard to see the overall distribution of the data,
+			   although bar chart is also a fair option to show a distribution of data points or perform a comparison of metric values across different subgroups of the data.
+				Furthermore, by sorting according to the maximum longevity within each Order, the clear answer becomes apparent.			   
+			   <p>As for the mark, I used strip instead of the circle because circle may not be as precise as strip on the coordinate axis, and because there are some data that are very close to zero, and there will be an overlap between the circle and the y axis if the circle mark is used, which may make it possible that readers may observe a wrong message. And if I make the circle smaller, it will not be as clear and readable as strip.</p>
+			   I chose to set the opacity to solve overplotting, darker parts indicate more species located at specific maximum longevity. I also chose a darker color instead of the default blue because the default blue color is too light after setting the opacity and it is not very readable. I have also encoded species names and the corresponding maximum longevity in tooltips so it is possible to hover over a point to see the associated information. </td>
+            </tr>
+            <tr>
+               <td style="width: 200px; vertical-align: top;"><strong>Data filtering and transformation:&nbsp;</strong></td>
+               <td style="vertical-align: top;">
+					Only species with recorded maximum longevity(yrs) greater than zero are shown, only species that belong to the Mammalia are shown
+					<p>Transform dataset file format from ".txt" to ".csv" using Python</p>
+					<p>Aggregate the data using "max" operation to select the maximum longevity in the "Maximum longevity (yrs)" field of every species that belongs to the Mammalia</p>
+				</td>
+            </tr>
+         </tbody>
+      </table>
+      <script type="text/javascript">
+        var yourVlSpec =  {
+  "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/explorer/information_visualisation/master/anage_data.csv",
+    "format": {"type": "csv"}
+  },
+  "title": {"text": "The Maximum Longevity in Mammalia", "anchor": "start", "fontSize": 24,"offset":20},
+  "transform": [
+    {"filter": "datum['Maximum longevity (yrs)'] > 0"},
+    {"filter": "datum.Class == 'Mammalia'"}
+  ],
+  "mark": {
+    "type": "tick",
+    "filled": false
+  },
+  "width": 500,
+  "encoding": {
+    "y": {
+      "field": "Order", 
+      "type": "nominal",
+      "axis": {"title": "Order in the Mammalia"},
+      "sort": {"op": "max", "field": "Maximum longevity (yrs)", "order": "descending"}
+    },
+    "x": {
+      "field": "Maximum longevity (yrs)",
+      "type": "quantitative",
+      "scale": {"zero": false},
+      "axis": {"grid": true},
+      "aggregate": "max"
+    },
+    "tooltip": [
+      {"field": "Species", "type": "nominal"},
+      {"field": "Maximum longevity (yrs)", "type": "quantitative"}
+    ],
+    "color": {"value": "DarkSlateBlue"},
+    "opacity": {"value": 0.3}
+  },
+  "config": {
+    "axis": {
+      "titleFontSize":24,
+      "titlePadding":10,
+      "labelFontSize":20
+    }
+  }
+}
+            vegaEmbed("#vis", yourVlSpec);
+      </script>
+   </body>
+</html>
