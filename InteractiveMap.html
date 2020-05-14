@@ -136,7 +136,7 @@
           "type": "multi"
         }
       },
-      "height": 600,
+      "height": 700,
       "width": 100
     },
     {
@@ -158,7 +158,7 @@
                 "strokeWidth": 1
               },
               "width": 400,
-              "height": 470
+              "height": 570
             },
             {
               "data": {
@@ -255,6 +255,7 @@
           ]
         },
         {
+          "layer": [{
           "selection": {
             "brush": {
               "type": "interval"
@@ -292,11 +293,45 @@
               "type": "quantitative"
             },
             "color": {
+              "value": "#ddd"
+            }
+          },
+          "width": 400,
+          "height": 100
+        },{
+          "mark": "bar",
+          "transform": [
+            {
+              "filter": {
+                "selection": "brush"
+              }
+            }
+          ],
+          "encoding": {
+            "x": {
+              "title": "Number of Students",
+              "field": "Total",
+              "bin": {
+                "step": 20,
+                "extent": [
+                  0,
+                  1000
+                ]
+              },
+              "type": "quantitative"
+            },
+            "y": {
+              "title": "Schools",
+              "aggregate": "count",
+              "type": "quantitative"
+            },
+            "color": {
               "value": "black"
             }
           },
           "width": 400,
           "height": 100
+        }]
         }
       ]
     }
